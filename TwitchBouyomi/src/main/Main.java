@@ -156,7 +156,7 @@ public class Main extends JFrame implements ActionListener {
 			textAuthPassword.setText(br.readLine());
 			textUserName.setText(br.readLine());
 			String readName = br.readLine();
-			if(readName.equals(1)){
+			if(readName.equals("1")){
 				checkBox.setSelected(true);
 				nameReading = true;
 			}
@@ -192,8 +192,8 @@ public class Main extends JFrame implements ActionListener {
 			bw.newLine();
 			bw.write(textUserName.getText());
 			bw.newLine();
-			if(checkBox.isSelected()) bw.write(1);
-			else bw.write(0);
+			if(checkBox.isSelected()) bw.write("1");
+			else bw.write("0");
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
