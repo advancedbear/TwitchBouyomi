@@ -39,7 +39,8 @@ public class Main extends JFrame implements ActionListener {
 	
 	private MyBot bot;
 	private boolean connection = false;
-
+	private boolean nameReading = false;
+	
 	File config = new File("config.cfg");
 
 	/**
@@ -122,6 +123,7 @@ public class Main extends JFrame implements ActionListener {
 				connection = true;
 				try {
 					bot = new MyBot(textUserName.getText(), textAuthPassword.getText(), "irc.chat.twitch.tv");
+					bot.readingName(checkBox.isSelected());
 				} catch (NickAlreadyInUseException e1) {
 					lblStatus_1.setText("ユーザー名が違います。");
 					lblStatus_1.setForeground(Color.RED);
@@ -139,10 +141,12 @@ public class Main extends JFrame implements ActionListener {
 				lblStatus_1.setText("Disconnected");
 				lblStatus_1.setForeground(Color.BLACK);
 				btnConnect.setText("Connect");
+				storeConfigFile(textAuthPassword.getText(), textUserName.getText());
 			}
 		}
 		if(e.getActionCommand().equals("Check")){
-			bot.readingName(checkBox.isSelected());
+			nameReading = checkBox.isSelected();
+			if(connection) bot.readingName(nameReading);
 		}
 	}
 
@@ -151,8 +155,17 @@ public class Main extends JFrame implements ActionListener {
 			BufferedReader br = new BufferedReader(new FileReader(config));
 			textAuthPassword.setText(br.readLine());
 			textUserName.setText(br.readLine());
+			String readName = br.readLine();
+			if(readName.equals(1)){
+				checkBox.setSelected(true);
+				nameReading = true;
+			}
+			else {
+				checkBox.setSelected(false);
+				nameReading = false;
+			}
 			br.close();
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			Desktop desktop = Desktop.getDesktop();
 			URI uri;
 			try {
@@ -169,8 +182,6 @@ public class Main extends JFrame implements ActionListener {
 			} else {
 				textAuthPassword.setText(value);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -180,6 +191,9 @@ public class Main extends JFrame implements ActionListener {
 			bw.write(textAuthPassword.getText());
 			bw.newLine();
 			bw.write(textUserName.getText());
+			bw.newLine();
+			if(checkBox.isSelected()) bw.write(1);
+			else bw.write(0);
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
