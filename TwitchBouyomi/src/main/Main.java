@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 
 public class Main extends JFrame implements ActionListener {
 
@@ -34,6 +35,8 @@ public class Main extends JFrame implements ActionListener {
 	private JTextField textUserName;
 	private JButton btnConnect = new JButton("Connect");
 	private JLabel lblStatus_1 = new JLabel("Disconnected");
+	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
+	
 	private MyBot bot;
 	private boolean connection = false;
 
@@ -63,7 +66,7 @@ public class Main extends JFrame implements ActionListener {
 	public Main() {
 		setTitle("Twitch Comment Talker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 300, 167);
+		setBounds(100, 100, 300, 190);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -88,17 +91,22 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.add(textUserName);
 		textUserName.setColumns(10);
 
-		btnConnect.setBounds(12, 56, 260, 38);
+		btnConnect.setBounds(12, 80, 260, 38);
 		contentPane.add(btnConnect);
 		btnConnect.addActionListener(this);
 		btnConnect.setActionCommand("auth");
 
 		JLabel lblStatus = new JLabel("Status:");
-		lblStatus.setBounds(12, 104, 35, 13);
+		lblStatus.setBounds(12, 128, 35, 13);
 		contentPane.add(lblStatus);
 
-		lblStatus_1.setBounds(59, 104, 213, 13);
+		lblStatus_1.setBounds(59, 128, 213, 13);
 		contentPane.add(lblStatus_1);
+		
+		checkBox.setBounds(8, 53, 264, 21);
+		contentPane.add(checkBox);
+		checkBox.addActionListener(this);
+		checkBox.setActionCommand("Check");
 
 		loadConfigFile();
 	}
@@ -132,6 +140,9 @@ public class Main extends JFrame implements ActionListener {
 				lblStatus_1.setForeground(Color.BLACK);
 				btnConnect.setText("Connect");
 			}
+		}
+		if(e.getActionCommand().equals("Check")){
+			bot.readingName(checkBox.isSelected());
 		}
 	}
 
