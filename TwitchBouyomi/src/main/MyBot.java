@@ -12,6 +12,7 @@ public class MyBot extends PircBot {
 	public MyBot(String UserName, String Password, String URL) throws Exception{
 		 
 	        this.setName(UserName);
+	        this.setEncoding("UTF-8");
 	        try {
 	            this.connect(URL, 6667, Password);
 	            this.joinChannel("#"+UserName);
