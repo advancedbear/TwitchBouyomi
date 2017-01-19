@@ -3,44 +3,43 @@ package main;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import org.jibble.pircbot.NickAlreadyInUseException;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import org.jibble.pircbot.NickAlreadyInUseException;
 
 public class Main extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
 	private JTextField textAuthPassword;
 	private JTextField textUserName;
+	private JTextField textEnglish;
 	private JButton btnConnect = new JButton("Connect");
 	private JLabel lblStatus_1 = new JLabel("Disconnected");
 	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
-	
+	JCheckBox checkBox2 = new JCheckBox("英文は専用音声を使う");
+
 	private MyBot bot;
 	private boolean connection = false;
 	private boolean nameReading = false;
-	
+	private int English = -1;
+
 	File config = new File("config.cfg");
 
 	/**
@@ -67,13 +66,13 @@ public class Main extends JFrame implements ActionListener {
 	public Main() {
 		setTitle("Twitch Comment Talker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 300, 190);
+		setBounds(100, 100, 300, 220);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel lblAuthPassword = new JLabel("OAuth Password");
+		JLabel lblAuthPassword = new JLabel("OAuth Pass");
 		lblAuthPassword.setBounds(12, 10, 86, 13);
 		contentPane.add(lblAuthPassword);
 
@@ -92,22 +91,33 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.add(textUserName);
 		textUserName.setColumns(10);
 
-		btnConnect.setBounds(12, 80, 260, 38);
+		btnConnect.setBounds(12, 110, 260, 38);
 		contentPane.add(btnConnect);
 		btnConnect.addActionListener(this);
 		btnConnect.setActionCommand("auth");
 
 		JLabel lblStatus = new JLabel("Status:");
-		lblStatus.setBounds(12, 128, 35, 13);
+		lblStatus.setBounds(12, 158, 40, 13);
 		contentPane.add(lblStatus);
 
-		lblStatus_1.setBounds(59, 128, 213, 13);
+		lblStatus_1.setBounds(59, 158, 213, 13);
 		contentPane.add(lblStatus_1);
-		
+
 		checkBox.setBounds(8, 53, 264, 21);
 		contentPane.add(checkBox);
 		checkBox.addActionListener(this);
 		checkBox.setActionCommand("Check");
+
+		checkBox2.setBounds(8, 80, 160, 21);
+		contentPane.add(checkBox2);
+		checkBox2.addActionListener(this);
+		checkBox2.setActionCommand("Check2");
+
+
+		textEnglish = new JTextField();
+		textEnglish.setBounds(170, 82, 100, 19);
+		contentPane.add(textEnglish);
+		textEnglish.setColumns(10);
 
 		loadConfigFile();
 	}
@@ -135,9 +145,11 @@ public class Main extends JFrame implements ActionListener {
 					connection = false;
 					bot.disconnect();
 				}
+				bot.usingEnglish(English);
 				storeConfigFile(textAuthPassword.getText(), textUserName.getText());
 			} else {
 				bot.disconnect();
+				connection = false;
 				lblStatus_1.setText("Disconnected");
 				lblStatus_1.setForeground(Color.BLACK);
 				btnConnect.setText("Connect");
@@ -147,6 +159,15 @@ public class Main extends JFrame implements ActionListener {
 		if(e.getActionCommand().equals("Check")){
 			nameReading = checkBox.isSelected();
 			if(connection) bot.readingName(nameReading);
+		}
+		if(e.getActionCommand().equals("Check2")){
+			try {
+				if(checkBox2.isSelected()) English = Integer.parseInt(textEnglish.getText());
+				else English = -1;
+			} catch (NumberFormatException nfe){
+				checkBox2.setSelected(false);;
+				JOptionPane.showMessageDialog(this, "英語音声のIDを入力してください");
+			}
 		}
 	}
 
@@ -163,6 +184,15 @@ public class Main extends JFrame implements ActionListener {
 			else {
 				checkBox.setSelected(false);
 				nameReading = false;
+			}
+			String useEnglish = br.readLine();
+			textEnglish.setText(useEnglish);
+			English = Integer.parseInt(useEnglish);
+			if(br.readLine().equals("1")){
+				checkBox2.setSelected(true);
+			}
+			else {
+				checkBox2.setSelected(false);
 			}
 			br.close();
 		} catch (Exception e) {
@@ -193,6 +223,11 @@ public class Main extends JFrame implements ActionListener {
 			bw.write(textUserName.getText());
 			bw.newLine();
 			if(checkBox.isSelected()) bw.write("1");
+			else bw.write("0");
+			bw.newLine();
+			bw.write(textEnglish.getText());
+			bw.newLine();
+			if(checkBox2.isSelected()) bw.write("1");
 			else bw.write("0");
 			bw.close();
 		} catch (IOException e) {
