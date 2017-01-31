@@ -42,10 +42,6 @@ public class Main extends JFrame implements ActionListener {
 
 	File config = new File("config.cfg");
 
-	/**
-	 * Launch the application.
-	 */
-
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -57,12 +53,8 @@ public class Main extends JFrame implements ActionListener {
 				}
 			}
 		});
-
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Main() {
 		setTitle("Twitch Comment Talker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -145,20 +137,21 @@ public class Main extends JFrame implements ActionListener {
 					connection = false;
 					bot.disconnect();
 				}
-				bot.usingEnglish(English);
-				storeConfigFile(textAuthPassword.getText(), textUserName.getText());
+				if(checkBox2.isSelected()) bot.usingEnglish(English);
+				storeConfigFile();
 			} else {
 				bot.disconnect();
 				connection = false;
 				lblStatus_1.setText("Disconnected");
 				lblStatus_1.setForeground(Color.BLACK);
 				btnConnect.setText("Connect");
-				storeConfigFile(textAuthPassword.getText(), textUserName.getText());
+				storeConfigFile();
 			}
 		}
 		if(e.getActionCommand().equals("Check")){
 			nameReading = checkBox.isSelected();
 			if(connection) bot.readingName(nameReading);
+			storeConfigFile();
 		}
 		if(e.getActionCommand().equals("Check2")){
 			try {
@@ -168,6 +161,9 @@ public class Main extends JFrame implements ActionListener {
 				checkBox2.setSelected(false);;
 				JOptionPane.showMessageDialog(this, "英語音声のIDを入力してください");
 			}
+			
+			if(connection) bot.usingEnglish(English);
+			storeConfigFile();
 		}
 	}
 
@@ -206,7 +202,7 @@ public class Main extends JFrame implements ActionListener {
 				lblStatus_1.setForeground(Color.RED);
 				connection = false;
 			}
-			String value = JOptionPane.showInputDialog(this, "OAuthPasswordを取得して下さい。");
+			String value = JOptionPane.showInputDialog(this, "OAuthPasswordを入力して下さい。");
 			if (value == null) {
 				JOptionPane.showMessageDialog(this, "OAuthPasswordを入力して下さい。");
 			} else {
@@ -215,7 +211,7 @@ public class Main extends JFrame implements ActionListener {
 		}
 	}
 
-	private void storeConfigFile(String password, String username) {
+	private void storeConfigFile() {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(config));
 			bw.write(textAuthPassword.getText());

@@ -1,9 +1,6 @@
 package main;
 
-import java.io.IOException;
-
-import org.jibble.pircbot.IrcException;
-import org.jibble.pircbot.NickAlreadyInUseException;
+import java.lang.String;
 import org.jibble.pircbot.PircBot;
 import org.snowink.bouyomichan.BouyomiChan4J;
 
@@ -16,16 +13,8 @@ public class MyBot extends PircBot {
 
 	        this.setName(UserName);
 	        this.setEncoding("UTF-8");
-	        try {
-	            this.connect(URL, 6667, Password);
-	            this.joinChannel("#"+UserName);
-	        } catch (NickAlreadyInUseException e) {
-	            System.err.println("既に使われているnickです.");
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        } catch (IrcException e) {
-	            e.printStackTrace();
-	        }
+            this.connect(URL, 6667, Password);
+            this.joinChannel("#"+UserName);
 	}
 
 
@@ -57,7 +46,9 @@ public class MyBot extends PircBot {
 	}
 
 	public boolean isEnglish(String text){
-		if(text.length() != text.getBytes().length) return false;
+		//if(text.matches("^[a-zA-Z0-9 -/:-@[-`{-~]+$")) return true;
+		byte[] Bytes = text.getBytes();
+		if(text.length() != Bytes.length) return false;
 		return true;
 	}
 
