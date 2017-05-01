@@ -74,7 +74,7 @@ public class Main extends JFrame implements ActionListener {
 		textAuthPassword.setColumns(10);
 		textAuthPassword.setEditable(false);
 
-		JLabel lblUserName = new JLabel("User Name");
+		JLabel lblUserName = new JLabel("Channel Name");
 		lblUserName.setBounds(12, 33, 86, 13);
 		contentPane.add(lblUserName);
 
@@ -92,7 +92,7 @@ public class Main extends JFrame implements ActionListener {
 		lblStatus.setBounds(12, 158, 40, 13);
 		contentPane.add(lblStatus);
 
-		lblStatus_1.setBounds(59, 158, 213, 13);
+		lblStatus_1.setBounds(59, 158, 100, 13);
 		contentPane.add(lblStatus_1);
 
 		checkBox.setBounds(8, 53, 264, 21);
@@ -110,6 +110,10 @@ public class Main extends JFrame implements ActionListener {
 		textEnglish.setBounds(170, 82, 100, 19);
 		contentPane.add(textEnglish);
 		textEnglish.setColumns(10);
+		
+		JButton btnOverlay = new JButton("OverLay");
+		btnOverlay.setBounds(181, 154, 91, 21);
+		contentPane.add(btnOverlay);
 
 		loadConfigFile();
 	}
