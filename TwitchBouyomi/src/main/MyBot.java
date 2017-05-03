@@ -7,7 +7,9 @@ import org.snowink.bouyomichan.BouyomiChan4J;
 
 public class MyBot extends PircBot {
 	BouyomiChan4J talker = new BouyomiChan4J();
+	Overlay overlay;
     boolean readName = false;
+    boolean isOverlay = false;
     int useEnglish = -1;
 	public MyBot(String UserName, String Password, String URL) throws Exception{
 
@@ -32,6 +34,11 @@ public class MyBot extends PircBot {
 				talker.talk(message +" "+ sender);
 			}
 		}
+		
+		if(isOverlay){
+			overlay.SetComment(sender, message);
+			System.out.println("set Comment");
+		}
     }
 
 
@@ -51,5 +58,14 @@ public class MyBot extends PircBot {
 		if(text.length() != Bytes.length) return false;
 		return true;
 	}
+	
+	public void openOverLay(){
+		overlay = new Overlay();
+		isOverlay = true; 
+	}
 
+	public void closeOverLay(){
+		overlay.setVisible(false);
+		isOverlay = false;
+	}
 }

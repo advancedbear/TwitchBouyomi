@@ -32,12 +32,14 @@ public class Main extends JFrame implements ActionListener {
 	private JTextField textEnglish;
 	private JButton btnConnect = new JButton("Connect");
 	private JLabel lblStatus_1 = new JLabel("Disconnected");
+	private JButton btnOverlay = new JButton("OverLay");
 	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
 	JCheckBox checkBox2 = new JCheckBox("英文は専用音声を使う");
 
 	private MyBot bot;
 	private boolean connection = false;
 	private boolean nameReading = false;
+	private boolean overlayStatus = false;
 	private int English = -1;
 
 	File config = new File("config.cfg");
@@ -111,9 +113,11 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.add(textEnglish);
 		textEnglish.setColumns(10);
 		
-		JButton btnOverlay = new JButton("OverLay");
+		btnOverlay.setEnabled(false);
 		btnOverlay.setBounds(181, 154, 91, 21);
 		contentPane.add(btnOverlay);
+		btnOverlay.addActionListener(this);
+		btnOverlay.setActionCommand("openOverlay");
 
 		loadConfigFile();
 	}
@@ -127,6 +131,7 @@ public class Main extends JFrame implements ActionListener {
 				lblStatus_1.setForeground(Color.GREEN);
 				btnConnect.setText("Disconnect");
 				connection = true;
+				btnOverlay.setEnabled(true);
 				try {
 					bot = new MyBot(textUserName.getText(), textAuthPassword.getText(), "irc.chat.twitch.tv");
 					bot.readingName(checkBox.isSelected());
@@ -150,6 +155,9 @@ public class Main extends JFrame implements ActionListener {
 				lblStatus_1.setForeground(Color.BLACK);
 				btnConnect.setText("Connect");
 				storeConfigFile();
+				btnOverlay.setEnabled(false);
+				bot.closeOverLay();
+				overlayStatus = false;
 			}
 		}
 		if(e.getActionCommand().equals("Check")){
@@ -168,6 +176,19 @@ public class Main extends JFrame implements ActionListener {
 			
 			if(connection) bot.usingEnglish(English);
 			storeConfigFile();
+		}
+		
+		if (e.getActionCommand().equals("openOverlay")) {
+			if(!overlayStatus){
+				bot.openOverLay();
+				btnOverlay.setText("Stop-OL");
+				overlayStatus = true;
+			} else {
+				bot.closeOverLay();
+				btnOverlay.setText("Overlay");
+				overlayStatus = false;
+			}
+			
 		}
 	}
 
