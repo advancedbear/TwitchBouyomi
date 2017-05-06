@@ -1,6 +1,14 @@
 package main;
 
+import java.awt.Image;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
+import java.io.IOException;
 import java.lang.String;
+
+import javax.imageio.ImageIO;
+
 import org.jibble.pircbot.PircBot;
 import org.snowink.bouyomichan.BouyomiChan4J;
 
@@ -9,12 +17,27 @@ public class MyBot extends PircBot {
 	BouyomiChan4J talker = new BouyomiChan4J();
     boolean readName = false;
     int useEnglish = -1;
+    
+    private TrayIcon icon;
+    
 	public MyBot(String UserName, String Password, String URL) throws Exception{
 
 	        this.setName(UserName);
 	        this.setEncoding("UTF-8");
             this.connect(URL, 6667, Password);
             this.joinChannel("#"+UserName);
+            
+
+    		Image image;
+    		try {
+    			image = ImageIO.read(
+    			        getClass().getResourceAsStream("icon.png"));
+    			icon = new TrayIcon(image);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} 
+    		SystemTray.getSystemTray().add(icon);
 	}
 
 
@@ -32,6 +55,9 @@ public class MyBot extends PircBot {
 				talker.talk(message +" "+ sender);
 			}
 		}
+		
+		icon.displayMessage(sender, message, MessageType.NONE);
+		
     }
 
 

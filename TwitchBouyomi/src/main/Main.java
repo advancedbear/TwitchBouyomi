@@ -3,6 +3,8 @@ package main;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -13,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -39,7 +42,7 @@ public class Main extends JFrame implements ActionListener {
 	private boolean connection = false;
 	private boolean nameReading = false;
 	private int English = -1;
-
+	
 	File config = new File("config.cfg");
 
 	public static void main(String[] args) {
@@ -112,6 +115,7 @@ public class Main extends JFrame implements ActionListener {
 		textEnglish.setColumns(10);
 
 		loadConfigFile();
+		
 	}
 
 	@Override
