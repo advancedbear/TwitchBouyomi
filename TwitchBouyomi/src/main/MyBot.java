@@ -27,7 +27,7 @@ public class MyBot extends PircBot {
     private TrayIcon icon;
     private SystemTray tray;
     
-	Map<String, String> R6Sdic = new HashMap<String, String>();
+	Map<String, String> repDic = new HashMap<String, String>();
     
 	public MyBot(String UserName, String Password, String URL) throws Exception{
 
@@ -41,10 +41,10 @@ public class MyBot extends PircBot {
     		icon.setImageAutoSize(true);
     		tray.add(icon);
     		
-    		BufferedReader reader = new BufferedReader(new FileReader("R6S.dic"));
+    		BufferedReader reader = new BufferedReader(new FileReader("Replacement.dic"));
     		String rl;
     		while((rl = reader.readLine()) != null) {
-    			R6Sdic.put(rl.split(",")[0],rl.split(",")[1]);
+    			repDic.put(rl.split(",")[0],rl.split(",")[1]);
     		}
     		reader.close();
 	}
@@ -55,13 +55,13 @@ public class MyBot extends PircBot {
 		System.out.println(sender+": "+message+", English:"+useEnglish);
 		if(!readName) {
 			if(useEnglish!=-1 && isEnglish(message)) talker.talk(-1, -1, -1, useEnglish, message);
-			else talker.talk(rainbowReplace(message));
+			else talker.talk(wordReplace(message));
 		}
 		else {
 			if(useEnglish!=-1 && isEnglish(message)) {
 				talker.talk(-1, -1, -1, useEnglish, message +", "+ sender);
 			} else {
-				talker.talk(rainbowReplace(message) +" "+ sender);
+				talker.talk(wordReplace(message) +" "+ sender);
 			}
 		}
 		
@@ -87,16 +87,19 @@ public class MyBot extends PircBot {
 	}
 
 	public boolean isEnglish(String text){
-		if(text.matches("^(.*[｡-ﾟぁ-ん亜-黑].*)*$")) return false;
+		if(text.matches("^(.*[｡-ﾟぁ-んァ-ヶ亜-黑一-龠々ー].*)*$")) {
+			System.out.println("これは日本語です。");
+			return false;
+		}
 		//byte[] Bytes = text.getBytes();
 		//if(text.length() != Bytes.length) return false;
 		return true;
 	}
 	
-	public String rainbowReplace(String word){
+	public String wordReplace(String word){
 		String result = word;
-		for(String key: R6Sdic.keySet()){
-			String data = R6Sdic.get(key);
+		for(String key: repDic.keySet()){
+			String data = repDic.get(key);
 			Pattern p = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(result);
 			result = m.replaceAll(data);

@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -70,7 +71,7 @@ public class Main extends JFrame implements ActionListener {
 		lblAuthPassword.setBounds(12, 10, 86, 13);
 		contentPane.add(lblAuthPassword);
 
-		textAuthPassword = new JTextField();
+		textAuthPassword = new JPasswordField();
 		textAuthPassword.setBounds(110, 7, 162, 19);
 		contentPane.add(textAuthPassword);
 		textAuthPassword.setColumns(10);
