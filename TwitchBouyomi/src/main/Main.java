@@ -3,8 +3,6 @@ package main;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.Image;
-import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -15,7 +13,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -37,10 +34,12 @@ public class Main extends JFrame implements ActionListener {
 	private JLabel lblStatus_1 = new JLabel("Disconnected");
 	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
 	JCheckBox checkBox2 = new JCheckBox("英文は専用音声を使う");
+	JCheckBox notifiCheck = new JCheckBox("通知");
 
 	private MyBot bot;
 	private boolean connection = false;
 	private boolean nameReading = false;
+	private boolean notifiUsing = false;
 	private int English = -1;
 	
 	File config = new File("config.cfg");
@@ -95,7 +94,7 @@ public class Main extends JFrame implements ActionListener {
 		lblStatus.setBounds(12, 158, 40, 13);
 		contentPane.add(lblStatus);
 
-		lblStatus_1.setBounds(59, 158, 213, 13);
+		lblStatus_1.setBounds(59, 158, 145, 13);
 		contentPane.add(lblStatus_1);
 
 		checkBox.setBounds(8, 53, 264, 21);
@@ -113,6 +112,11 @@ public class Main extends JFrame implements ActionListener {
 		textEnglish.setBounds(170, 82, 100, 19);
 		contentPane.add(textEnglish);
 		textEnglish.setColumns(10);
+		
+		notifiCheck.setBounds(212, 154, 60, 21);
+		contentPane.add(notifiCheck);
+		notifiCheck.addActionListener(this);
+		notifiCheck.setActionCommand("notifi");
 
 		loadConfigFile();
 		
@@ -142,6 +146,7 @@ public class Main extends JFrame implements ActionListener {
 					bot.disconnect();
 				}
 				if(checkBox2.isSelected()) bot.usingEnglish(English);
+				if(notifiCheck.isSelected()) bot.usingPopup(true);
 				storeConfigFile();
 			} else {
 				bot.disconnect();
@@ -169,6 +174,13 @@ public class Main extends JFrame implements ActionListener {
 			if(connection) bot.usingEnglish(English);
 			storeConfigFile();
 		}
+		if(e.getActionCommand().equals("notifi")){
+			if(connection){
+				notifiUsing = notifiCheck.isSelected();
+				bot.usingPopup(notifiUsing);
+				storeConfigFile();
+			}
+		}
 	}
 
 	private void loadConfigFile() {
@@ -193,6 +205,14 @@ public class Main extends JFrame implements ActionListener {
 			}
 			else {
 				checkBox2.setSelected(false);
+			}
+			if(br.readLine().equals("1")){
+				notifiCheck.setSelected(true);
+				notifiUsing = true;
+			}
+			else {
+				notifiCheck.setSelected(false);
+				notifiUsing = false;
 			}
 			br.close();
 		} catch (Exception e) {
@@ -228,6 +248,9 @@ public class Main extends JFrame implements ActionListener {
 			bw.write(textEnglish.getText());
 			bw.newLine();
 			if(checkBox2.isSelected()) bw.write("1");
+			else bw.write("0");
+			bw.newLine();
+			if(notifiCheck.isSelected()) bw.write("1");
 			else bw.write("0");
 			bw.close();
 		} catch (IOException e) {
