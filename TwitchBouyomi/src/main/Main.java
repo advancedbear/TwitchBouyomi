@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import org.jibble.pircbot.NickAlreadyInUseException;
+import java.awt.Font;
 
 public class Main extends JFrame implements ActionListener {
 
@@ -46,6 +47,8 @@ public class Main extends JFrame implements ActionListener {
 	File config = new File("config.cfg");
 
 	public static void main(String[] args) {
+		System.setProperty("awt.useSystemAAFontSettings","on");
+		System.setProperty("swing.aatext", "true");
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -68,6 +71,7 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.setLayout(null);
 
 		JLabel lblAuthPassword = new JLabel("OAuth Pass");
+		lblAuthPassword.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		lblAuthPassword.setBounds(12, 10, 86, 13);
 		contentPane.add(lblAuthPassword);
 
@@ -77,7 +81,8 @@ public class Main extends JFrame implements ActionListener {
 		textAuthPassword.setColumns(10);
 		textAuthPassword.setEditable(false);
 
-		JLabel lblUserName = new JLabel("User Name");
+		JLabel lblUserName = new JLabel("Channel Name");
+		lblUserName.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		lblUserName.setBounds(12, 33, 86, 13);
 		contentPane.add(lblUserName);
 
@@ -85,6 +90,7 @@ public class Main extends JFrame implements ActionListener {
 		textUserName.setBounds(110, 30, 162, 19);
 		contentPane.add(textUserName);
 		textUserName.setColumns(10);
+		btnConnect.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		btnConnect.setBounds(12, 110, 260, 38);
 		contentPane.add(btnConnect);
@@ -92,16 +98,20 @@ public class Main extends JFrame implements ActionListener {
 		btnConnect.setActionCommand("auth");
 
 		JLabel lblStatus = new JLabel("Status:");
-		lblStatus.setBounds(12, 158, 40, 13);
+		lblStatus.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		lblStatus.setBounds(12, 158, 43, 13);
 		contentPane.add(lblStatus);
+		lblStatus_1.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		lblStatus_1.setBounds(59, 158, 145, 13);
+		lblStatus_1.setBounds(67, 158, 137, 13);
 		contentPane.add(lblStatus_1);
+		checkBox.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		checkBox.setBounds(8, 53, 264, 21);
 		contentPane.add(checkBox);
 		checkBox.addActionListener(this);
 		checkBox.setActionCommand("Check");
+		checkBox2.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		checkBox2.setBounds(8, 80, 160, 21);
 		contentPane.add(checkBox2);
@@ -113,6 +123,7 @@ public class Main extends JFrame implements ActionListener {
 		textEnglish.setBounds(170, 82, 100, 19);
 		contentPane.add(textEnglish);
 		textEnglish.setColumns(10);
+		notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		
 		notifiCheck.setBounds(212, 154, 60, 21);
 		contentPane.add(notifiCheck);

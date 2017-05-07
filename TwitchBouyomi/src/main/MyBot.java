@@ -44,7 +44,9 @@ public class MyBot extends PircBot {
     		BufferedReader reader = new BufferedReader(new FileReader("Replacement.dic"));
     		String rl;
     		while((rl = reader.readLine()) != null) {
-    			repDic.put(rl.split(",")[0],rl.split(",")[1]);
+    			if(!rl.startsWith("//")){
+    				repDic.put(rl.split(",")[0],rl.split(",")[1]);
+    			}
     		}
     		reader.close();
 	}
@@ -91,8 +93,6 @@ public class MyBot extends PircBot {
 			System.out.println("これは日本語です。");
 			return false;
 		}
-		//byte[] Bytes = text.getBytes();
-		//if(text.length() != Bytes.length) return false;
 		return true;
 	}
 	
