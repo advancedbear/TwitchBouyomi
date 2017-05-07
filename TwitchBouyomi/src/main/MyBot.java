@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import WinSAPI.WinSAPI;
+
 import org.jibble.pircbot.PircBot;
 import org.snowink.bouyomichan.BouyomiChan4J;
 
@@ -24,8 +26,12 @@ public class MyBot extends PircBot {
     boolean usePopup = false;
     int useEnglish = -1;
     
+
+	WinSAPI  sapi = new WinSAPI("");
+    
     private TrayIcon icon;
     private SystemTray tray;
+	private ProcessBuilder pb = new ProcessBuilder();
     
 	Map<String, String> repDic = new HashMap<String, String>();
     
@@ -35,6 +41,9 @@ public class MyBot extends PircBot {
 	        this.setEncoding("UTF-8");
             this.connect(URL, 6667, Password);
             this.joinChannel("#"+UserName);
+
+			sapi.setVoice("Zira");
+			sapi.setSpeed(0);
             
             tray  = SystemTray.getSystemTray();
     		icon = new TrayIcon(ImageIO.read(new File("icon.png")), "Twitch Bouyomi");
@@ -44,7 +53,7 @@ public class MyBot extends PircBot {
     		BufferedReader reader = new BufferedReader(new FileReader("Replacement.dic"));
     		String rl;
     		while((rl = reader.readLine()) != null) {
-    			if(!rl.startsWith("//")){
+    			if(!(rl.startsWith("//") || rl.equals(""))){
     				repDic.put(rl.split(",")[0],rl.split(",")[1]);
     			}
     		}
@@ -56,12 +65,12 @@ public class MyBot extends PircBot {
                        String login, String hostname, String message) {
 		System.out.println(sender+": "+message+", English:"+useEnglish);
 		if(!readName) {
-			if(useEnglish!=-1 && isEnglish(message)) talker.talk(-1, -1, -1, useEnglish, message);
+			if(useEnglish!=-1 && isEnglish(message)) sapi.speakAsyMsg(message);
 			else talker.talk(wordReplace(message));
 		}
 		else {
 			if(useEnglish!=-1 && isEnglish(message)) {
-				talker.talk(-1, -1, -1, useEnglish, message +", "+ sender);
+				sapi.speakAsyMsg(message +", "+ sender);
 			} else {
 				talker.talk(wordReplace(message) +" "+ sender);
 			}

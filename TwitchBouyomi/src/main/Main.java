@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -24,25 +25,31 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import org.jibble.pircbot.NickAlreadyInUseException;
+
+import WinSAPI.WinSAPI;
+
 import java.awt.Font;
 
+@SuppressWarnings("serial")
 public class Main extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
-	private JTextField textAuthPassword;
+	private JPasswordField textAuthPassword;
 	private JTextField textUserName;
 	private JTextField textEnglish;
 	private JButton btnConnect = new JButton("Connect");
 	private JLabel lblStatus_1 = new JLabel("Disconnected");
 	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
 	JCheckBox checkBox2 = new JCheckBox("英文は専用音声を使う");
-	JCheckBox notifiCheck = new JCheckBox("通知");
+	JCheckBox notifiCheck = new JCheckBox("コメント通知機能を使う");
 
 	private MyBot bot;
 	private boolean connection = false;
 	private boolean nameReading = false;
 	private boolean notifiUsing = false;
 	private int English = -1;
+	
+	private WinSAPI vapi = new WinSAPI("");
 	
 	File config = new File("config.cfg");
 
@@ -64,7 +71,10 @@ public class Main extends JFrame implements ActionListener {
 	public Main() {
 		setTitle("Twitch Comment Talker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 300, 220);
+		ImageIcon icon = new ImageIcon("./icon.png");
+	    setIconImage(icon.getImage());
+		setBounds(100, 100, 300, 226);
+		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -76,8 +86,9 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.add(lblAuthPassword);
 
 		textAuthPassword = new JPasswordField();
-		textAuthPassword.setBounds(110, 7, 162, 19);
+		textAuthPassword.setBounds(110, 7, 172, 19);
 		contentPane.add(textAuthPassword);
+		textAuthPassword.setEchoChar('*');
 		textAuthPassword.setColumns(10);
 		textAuthPassword.setEditable(false);
 
@@ -87,45 +98,46 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.add(lblUserName);
 
 		textUserName = new JTextField();
-		textUserName.setBounds(110, 30, 162, 19);
+		textUserName.setBounds(110, 30, 172, 19);
 		contentPane.add(textUserName);
 		textUserName.setColumns(10);
 		btnConnect.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		btnConnect.setBounds(12, 110, 260, 38);
+		btnConnect.setBounds(8, 125, 276, 38);
 		contentPane.add(btnConnect);
 		btnConnect.addActionListener(this);
 		btnConnect.setActionCommand("auth");
 
 		JLabel lblStatus = new JLabel("Status:");
 		lblStatus.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
-		lblStatus.setBounds(12, 158, 43, 13);
+		lblStatus.setBounds(12, 173, 43, 13);
 		contentPane.add(lblStatus);
 		lblStatus_1.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		lblStatus_1.setBounds(67, 158, 137, 13);
+		lblStatus_1.setBounds(67, 173, 215, 13);
 		contentPane.add(lblStatus_1);
 		checkBox.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		checkBox.setBounds(8, 53, 264, 21);
+		checkBox.setBounds(8, 52, 264, 21);
 		contentPane.add(checkBox);
 		checkBox.addActionListener(this);
 		checkBox.setActionCommand("Check");
 		checkBox2.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		checkBox2.setBounds(8, 80, 160, 21);
+		checkBox2.setBounds(8, 75, 137, 21);
 		contentPane.add(checkBox2);
 		checkBox2.addActionListener(this);
 		checkBox2.setActionCommand("Check2");
 
 
-		textEnglish = new JTextField();
-		textEnglish.setBounds(170, 82, 100, 19);
+		textEnglish = new JTextField(vapi.getVoice());
+		textEnglish.setEditable(false);
+		textEnglish.setBounds(153, 76, 129, 19);
 		contentPane.add(textEnglish);
 		textEnglish.setColumns(10);
 		notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		
-		notifiCheck.setBounds(212, 154, 60, 21);
+		notifiCheck.setBounds(8, 98, 137, 21);
 		contentPane.add(notifiCheck);
 		notifiCheck.addActionListener(this);
 		notifiCheck.setActionCommand("notifi");
@@ -144,7 +156,7 @@ public class Main extends JFrame implements ActionListener {
 				btnConnect.setText("Disconnect");
 				connection = true;
 				try {
-					bot = new MyBot(textUserName.getText(), textAuthPassword.getText(), "irc.chat.twitch.tv");
+					bot = new MyBot(textUserName.getText(), new String(textAuthPassword.getPassword()), "irc.chat.twitch.tv");
 					bot.readingName(checkBox.isSelected());
 				} catch (NickAlreadyInUseException e1) {
 					lblStatus_1.setText("ユーザー名が違います。");
@@ -176,7 +188,7 @@ public class Main extends JFrame implements ActionListener {
 		}
 		if(e.getActionCommand().equals("Check2")){
 			try {
-				if(checkBox2.isSelected()) English = Integer.parseInt(textEnglish.getText());
+				if(checkBox2.isSelected()) English = 1;
 				else English = -1;
 			} catch (NumberFormatException nfe){
 				checkBox2.setSelected(false);;
@@ -209,14 +221,13 @@ public class Main extends JFrame implements ActionListener {
 				checkBox.setSelected(false);
 				nameReading = false;
 			}
-			String useEnglish = br.readLine();
-			textEnglish.setText(useEnglish);
-			English = Integer.parseInt(useEnglish);
 			if(br.readLine().equals("1")){
 				checkBox2.setSelected(true);
+				English = 1;
 			}
 			else {
 				checkBox2.setSelected(false);
+				English = -1;
 			}
 			if(br.readLine().equals("1")){
 				notifiCheck.setSelected(true);
@@ -250,14 +261,12 @@ public class Main extends JFrame implements ActionListener {
 	private void storeConfigFile() {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(config));
-			bw.write(textAuthPassword.getText());
+			bw.write(new String(textAuthPassword.getPassword()));
 			bw.newLine();
 			bw.write(textUserName.getText());
 			bw.newLine();
 			if(checkBox.isSelected()) bw.write("1");
 			else bw.write("0");
-			bw.newLine();
-			bw.write(textEnglish.getText());
 			bw.newLine();
 			if(checkBox2.isSelected()) bw.write("1");
 			else bw.write("0");
