@@ -36,7 +36,7 @@ public class Main extends JFrame implements ActionListener {
 	private JPanel contentPane;
 	private JPasswordField textAuthPassword;
 	private JTextField textUserName;
-	private JTextField textEnglish;
+	private JButton textEnglish;
 	private JButton btnConnect = new JButton("Connect");
 	private JLabel lblStatus_1 = new JLabel("Disconnected");
 	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
@@ -63,6 +63,9 @@ public class Main extends JFrame implements ActionListener {
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
+				} catch (java.lang.UnsatisfiedLinkError e2){
+					JOptionPane.showMessageDialog(null, "32bit版をご利用下さい");
+					System.exit(-1);
 				}
 			}
 		});
@@ -130,13 +133,14 @@ public class Main extends JFrame implements ActionListener {
 		checkBox2.setActionCommand("Check2");
 
 
-		textEnglish = new JTextField(vapi.getVoice());
-		textEnglish.setEditable(false);
+		textEnglish = new JButton(vapi.getVoice());
+		textEnglish.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		textEnglish.setBounds(153, 76, 129, 19);
 		contentPane.add(textEnglish);
-		textEnglish.setColumns(10);
-		notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		textEnglish.addActionListener(this);
+		textEnglish.setActionCommand("openSAPI");
 		
+		notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		notifiCheck.setBounds(8, 98, 137, 21);
 		contentPane.add(notifiCheck);
 		notifiCheck.addActionListener(this);
@@ -154,6 +158,7 @@ public class Main extends JFrame implements ActionListener {
 				lblStatus_1.setText("Connected");
 				lblStatus_1.setForeground(Color.GREEN);
 				btnConnect.setText("Disconnect");
+				textUserName.setEditable(false);
 				connection = true;
 				try {
 					bot = new MyBot(textUserName.getText(), new String(textAuthPassword.getPassword()), "irc.chat.twitch.tv");
@@ -161,11 +166,13 @@ public class Main extends JFrame implements ActionListener {
 				} catch (NickAlreadyInUseException e1) {
 					lblStatus_1.setText("ユーザー名が違います。");
 					lblStatus_1.setForeground(Color.RED);
+					textUserName.setEditable(true);
 					connection = false;
 					bot.disconnect();
 				} catch (Exception e2) {
 					lblStatus_1.setText(e2.toString());
 					lblStatus_1.setForeground(Color.RED);
+					textUserName.setEditable(true);
 					connection = false;
 					bot.disconnect();
 				}
@@ -175,6 +182,7 @@ public class Main extends JFrame implements ActionListener {
 			} else {
 				bot.disconnect();
 				connection = false;
+				textUserName.setEditable(true);
 				lblStatus_1.setText("Disconnected");
 				lblStatus_1.setForeground(Color.BLACK);
 				btnConnect.setText("Connect");
@@ -203,6 +211,14 @@ public class Main extends JFrame implements ActionListener {
 				notifiUsing = notifiCheck.isSelected();
 				bot.usingPopup(notifiUsing);
 				storeConfigFile();
+			}
+		}
+		if(e.getActionCommand().equals("openSAPI")){
+			ProcessBuilder pb = new ProcessBuilder("control", System.getenv("windir")+"\\System32\\Speech\\SpeechUX\\sapi.cpl");
+			try {
+				pb.start();
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(null, "音声合成プロパティが開けません。");
 			}
 		}
 	}
