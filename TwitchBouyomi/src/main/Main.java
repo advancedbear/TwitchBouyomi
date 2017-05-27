@@ -54,8 +54,8 @@ public class Main extends JFrame implements ActionListener {
 	File config = new File("config.cfg");
 
 	public static void main(String[] args) {
-		System.setProperty("awt.useSystemAAFontSettings","on");
-		System.setProperty("swing.aatext", "true");
+		System.setProperty("sun.java2d.noddraw", "true");
+	    System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -84,7 +84,7 @@ public class Main extends JFrame implements ActionListener {
 		contentPane.setLayout(null);
 
 		JLabel lblAuthPassword = new JLabel("OAuth Pass");
-		lblAuthPassword.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//lblAuthPassword.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		lblAuthPassword.setBounds(12, 10, 86, 13);
 		contentPane.add(lblAuthPassword);
 
@@ -96,7 +96,7 @@ public class Main extends JFrame implements ActionListener {
 		textAuthPassword.setEditable(false);
 
 		JLabel lblUserName = new JLabel("Channel Name");
-		lblUserName.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//lblUserName.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		lblUserName.setBounds(12, 33, 86, 13);
 		contentPane.add(lblUserName);
 
@@ -104,7 +104,7 @@ public class Main extends JFrame implements ActionListener {
 		textUserName.setBounds(110, 30, 172, 19);
 		contentPane.add(textUserName);
 		textUserName.setColumns(10);
-		btnConnect.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//btnConnect.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		btnConnect.setBounds(8, 125, 276, 38);
 		contentPane.add(btnConnect);
@@ -112,20 +112,20 @@ public class Main extends JFrame implements ActionListener {
 		btnConnect.setActionCommand("auth");
 
 		JLabel lblStatus = new JLabel("Status:");
-		lblStatus.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//lblStatus.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		lblStatus.setBounds(12, 173, 43, 13);
 		contentPane.add(lblStatus);
-		lblStatus_1.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//lblStatus_1.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		lblStatus_1.setBounds(67, 173, 215, 13);
 		contentPane.add(lblStatus_1);
-		checkBox.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//checkBox.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		checkBox.setBounds(8, 52, 264, 21);
 		contentPane.add(checkBox);
 		checkBox.addActionListener(this);
 		checkBox.setActionCommand("Check");
-		checkBox2.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//checkBox2.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
 		checkBox2.setBounds(8, 75, 137, 21);
 		contentPane.add(checkBox2);
@@ -134,13 +134,13 @@ public class Main extends JFrame implements ActionListener {
 
 
 		textEnglish = new JButton(vapi.getVoice());
-		textEnglish.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//textEnglish.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		textEnglish.setBounds(153, 76, 129, 19);
 		contentPane.add(textEnglish);
 		textEnglish.addActionListener(this);
-		textEnglish.setActionCommand("openSAPI");
+		//textEnglish.setActionCommand("openSAPI");
 		
-		notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
+		//notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		notifiCheck.setBounds(8, 98, 137, 21);
 		contentPane.add(notifiCheck);
 		notifiCheck.addActionListener(this);
