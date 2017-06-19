@@ -64,6 +64,7 @@ public class Main extends JFrame implements ActionListener {
 				} catch (Exception e) {
 					e.printStackTrace();
 				} catch (java.lang.UnsatisfiedLinkError e2){
+					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "32bit版をご利用下さい");
 					System.exit(-1);
 				}
@@ -138,7 +139,7 @@ public class Main extends JFrame implements ActionListener {
 		textEnglish.setBounds(153, 76, 129, 19);
 		contentPane.add(textEnglish);
 		textEnglish.addActionListener(this);
-		//textEnglish.setActionCommand("openSAPI");
+		textEnglish.setActionCommand("openSAPI");
 		
 		//notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 		notifiCheck.setBounds(8, 98, 137, 21);
