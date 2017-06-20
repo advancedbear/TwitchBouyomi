@@ -269,6 +269,7 @@ public class Main extends JFrame implements ActionListener {
 			String value = JOptionPane.showInputDialog(this, "OAuthPasswordを入力して下さい。");
 			if (value == null) {
 				JOptionPane.showMessageDialog(this, "OAuthPasswordを入力して下さい。");
+				System.exit(-1);
 			} else {
 				textAuthPassword.setText(value);
 			}
