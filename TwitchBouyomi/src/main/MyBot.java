@@ -34,6 +34,7 @@ public class MyBot extends PircBot {
 	private ProcessBuilder pb = new ProcessBuilder();
     
 	Map<String, String> repDic = new HashMap<String, String>();
+	String[] blockUsers = new String[1000];
     
 	public MyBot(String UserName, String Password, String URL) throws Exception{
 
@@ -46,7 +47,7 @@ public class MyBot extends PircBot {
 			sapi.setSpeed(0);
             
             tray  = SystemTray.getSystemTray();
-    		icon = new TrayIcon(ImageIO.read(new File("icon.png")), "Twitch Bouyomi");
+    		icon = new TrayIcon(ImageIO.read(new File("./icon.png")), "Twitch Bouyomi");
     		icon.setImageAutoSize(true);
     		tray.add(icon);
     		
@@ -58,26 +59,38 @@ public class MyBot extends PircBot {
     			}
     		}
     		reader.close();
+    		
+    		BufferedReader reader2 = new BufferedReader(new FileReader("BlockUsers.txt"));
+    		String rl2;
+    		for(int i=0;(rl2 = reader2.readLine()) != null; i++) {
+    			if(i==1000) break;
+    			blockUsers[i] = rl2;
+    		}
+    		reader2.close();
 	}
 
 
 	public void onMessage(String channel, String sender,
                        String login, String hostname, String message) {
 		System.out.println(sender+": "+message+", English:"+useEnglish);
-		if(!readName) {
-			if(useEnglish!=-1 && isEnglish(message)) sapi.speakAsyMsg(message);
-			else talker.talk(wordReplace(message));
-		}
-		else {
-			if(useEnglish!=-1 && isEnglish(message)) {
-				sapi.speakAsyMsg(message +", "+ sender);
-			} else {
-				talker.talk(wordReplace(message) +" "+ sender);
+		if(!checkBlockUser(sender)){
+			message = urlReplace(message);
+			System.out.println("Replaced URL: " +message);
+			if(!readName) {
+				if(useEnglish!=-1 && isEnglish(message)) sapi.speakAsyMsg(message);
+				else talker.talk(wordReplace(message));
 			}
-		}
-		
-		if(usePopup){
-			icon.displayMessage(sender, message, MessageType.NONE);
+			else {
+				if(useEnglish!=-1 && isEnglish(message)) {
+					sapi.speakAsyMsg(message +", "+ sender);
+				} else {
+					talker.talk(wordReplace(message) +" "+ sender);
+				}
+			}
+			
+			if(usePopup){
+				icon.displayMessage(sender, message, MessageType.NONE);
+			}
 		}
     }
 
@@ -105,6 +118,15 @@ public class MyBot extends PircBot {
 		return true;
 	}
 	
+	public boolean checkBlockUser (String username){
+		for(int i=0;i < 1000; i++){
+			if(username.equals(blockUsers[i])){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public String wordReplace(String word){
 		String result = word;
 		for(String key: repDic.keySet()){
@@ -117,4 +139,11 @@ public class MyBot extends PircBot {
 		return result;
 	}
 
+	public String urlReplace(String word){
+		String result = word;
+		Pattern p = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+",Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(result);
+		result = m.replaceAll(";WebURL;");
+		return result;
+	}
 }
