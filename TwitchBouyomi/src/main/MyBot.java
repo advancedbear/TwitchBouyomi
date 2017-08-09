@@ -111,7 +111,7 @@ public class MyBot extends PircBot {
 	}
 
 	public boolean isEnglish(String text){
-		if(text.matches("^(.*[｡-ﾟ０-９ａ-ｚＡ-Ｚぁ-ん-ァ-ヶ亜-黑一-龠々ー].*)*$")) {
+		if(text.matches("^(.*[｡-ﾟ０-９ａ-ｚＡ-Ｚぁ-んァ-ヶ亜-黑一-龠々ー].*)*$")) {
 			System.out.println("これは日本語です。");
 			return false;
 		}
