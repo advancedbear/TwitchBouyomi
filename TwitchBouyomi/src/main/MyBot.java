@@ -25,14 +25,13 @@ public class MyBot extends PircBot {
     boolean readName = false;
     boolean usePopup = false;
     boolean readEmote = false;
-    int useEnglish = -1;
+    boolean useEnglish = false;
     
 
 	WinSAPI  sapi = new WinSAPI("");
     
     private TrayIcon icon;
     private SystemTray tray;
-	private ProcessBuilder pb = new ProcessBuilder();
     
 	Map<String, String> repDicJP = new HashMap<String, String>();
 	Map<String, String> repDicEN = new HashMap<String, String>();
@@ -83,25 +82,12 @@ public class MyBot extends PircBot {
 
 	public void onMessage(String channel, String sender,
                        String login, String hostname, String message) {
-		System.out.println(sender+": "+message+", English:"+useEnglish);
-		if(!checkBlockUser(sender)){
-			if(!readEmote){
-				message = urlReplace(emoteReplace(message));
-			} else {
-				message = urlReplace(message);
-			}
-			System.out.println("Replaced URL: " +message);
-			if(!readName) {
-				if(useEnglish!=-1 && isEnglish(message)) sapi.speakAsyMsg(wordReplaceEN(message));
-				else talker.talk(wordReplaceJP(message));
-			}
-			else {
-				if(useEnglish!=-1 && isEnglish(message)) {
-					sapi.speakAsyMsg(wordReplaceEN(message +", "+ sender));
-				} else {
-					talker.talk(wordReplaceJP(message +" "+ sender));
-				}
-			}
+		String tmpMessage = message;
+		if(!isBlockedUser(sender)){
+			tmpMessage = readEmote ? urlReplace(tmpMessage) : urlReplace(emoteReplace(tmpMessage));
+			tmpMessage = readName ? tmpMessage+", "+sender : tmpMessage;
+			if(useEnglish && isEnglish(message)) sapi.speakAsyMsg(wordReplaceEN(tmpMessage));
+			else talker.talk(wordReplaceJP(tmpMessage));
 			
 			if(usePopup){
 				icon.displayMessage(sender, message, MessageType.NONE);
@@ -110,24 +96,20 @@ public class MyBot extends PircBot {
     }
 
 
-	public void readingName(boolean check) {
-		// TODO Auto-generated method stub
-		if(check) readName = true;
-		else readName = false;
+	public void setReadName (boolean check) {
+		readName = check;
 	}
 
-	public void usingEnglish(int num) {
-		useEnglish = num;
+	public void setUseEnglish(boolean check) {
+		useEnglish = check;
 	}
 	
-	public void usingPopup(boolean check) {
-		if(check) usePopup = true;
-		else usePopup = false;
+	public void setUsePopup(boolean check) {
+		usePopup = check;
 	}
 	
-	public void readingEmote(boolean check){
-		if(check) readEmote = true;
-		else readEmote = false;
+	public void setReadEmote(boolean check){
+		readEmote = check;
 	}
 
 	public boolean isEnglish(String text){
@@ -138,7 +120,7 @@ public class MyBot extends PircBot {
 		return true;
 	}
 	
-	public boolean checkBlockUser (String username){
+	public boolean isBlockedUser (String username){
 		for(int i=0;i < 1000; i++){
 			if(username.equals(blockUsers[i])){
 				return true;
