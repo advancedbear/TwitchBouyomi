@@ -24,6 +24,7 @@ public class MyBot extends PircBot {
 	BouyomiChan4J talker = new BouyomiChan4J();
     boolean readName = false;
     boolean usePopup = false;
+    boolean readEmote = false;
     int useEnglish = -1;
     
 
@@ -33,7 +34,8 @@ public class MyBot extends PircBot {
     private SystemTray tray;
 	private ProcessBuilder pb = new ProcessBuilder();
     
-	Map<String, String> repDic = new HashMap<String, String>();
+	Map<String, String> repDicJP = new HashMap<String, String>();
+	Map<String, String> repDicEN = new HashMap<String, String>();
 	String[] blockUsers = new String[1000];
     
 	public MyBot(String UserName, String Password, String URL) throws Exception{
@@ -51,11 +53,11 @@ public class MyBot extends PircBot {
     		icon.setImageAutoSize(true);
     		tray.add(icon);
     		
-    		BufferedReader reader = new BufferedReader(new FileReader("Replacement.dic"));
+    		BufferedReader reader = new BufferedReader(new FileReader("Replacement_JP.dic"));
     		String rl;
     		while((rl = reader.readLine()) != null) {
     			if(!(rl.startsWith("//") || rl.equals(""))){
-    				repDic.put(rl.split(",")[0],rl.split(",")[1]);
+    				repDicJP.put(rl.split(",")[0],rl.split(",")[1]);
     			}
     		}
     		reader.close();
@@ -67,6 +69,15 @@ public class MyBot extends PircBot {
     			blockUsers[i] = rl2;
     		}
     		reader2.close();
+    		
+    		BufferedReader reader3 = new BufferedReader(new FileReader("Replacement_EN.dic"));
+    		String rl3;
+    		while((rl3 = reader3.readLine()) != null) {
+    			if(!(rl3.startsWith("//") || rl3.equals(""))){
+    				repDicEN.put(rl3.split(",")[0],rl3.split(",")[1]);
+    			}
+    		}
+    		reader3.close();
 	}
 
 
@@ -74,17 +85,21 @@ public class MyBot extends PircBot {
                        String login, String hostname, String message) {
 		System.out.println(sender+": "+message+", English:"+useEnglish);
 		if(!checkBlockUser(sender)){
-			message = urlReplace(emoteReplace(message));
+			if(!readEmote){
+				message = urlReplace(emoteReplace(message));
+			} else {
+				message = urlReplace(message);
+			}
 			System.out.println("Replaced URL: " +message);
 			if(!readName) {
-				if(useEnglish!=-1 && isEnglish(message)) sapi.speakAsyMsg(message);
-				else talker.talk(wordReplace(message));
+				if(useEnglish!=-1 && isEnglish(message)) sapi.speakAsyMsg(wordReplaceEN(message));
+				else talker.talk(wordReplaceJP(message));
 			}
 			else {
 				if(useEnglish!=-1 && isEnglish(message)) {
-					sapi.speakAsyMsg(message +", "+ sender);
+					sapi.speakAsyMsg(wordReplaceEN(message +", "+ sender));
 				} else {
-					talker.talk(wordReplace(message) +" "+ sender);
+					talker.talk(wordReplaceJP(message +" "+ sender));
 				}
 			}
 			
@@ -109,6 +124,11 @@ public class MyBot extends PircBot {
 		if(check) usePopup = true;
 		else usePopup = false;
 	}
+	
+	public void readingEmote(boolean check){
+		if(check) readEmote = true;
+		else readEmote = false;
+	}
 
 	public boolean isEnglish(String text){
 		if(text.matches("^(.*[｡-ﾟ０-９ａ-ｚＡ-Ｚぁ-んァ-ヶ亜-黑一-龠々ー].*)*$")) {
@@ -127,10 +147,22 @@ public class MyBot extends PircBot {
 		return false;
 	}
 	
-	public String wordReplace(String word){
+	public String wordReplaceJP(String word){
 		String result = word;
-		for(String key: repDic.keySet()){
-			String data = repDic.get(key);
+		for(String key: repDicJP.keySet()){
+			String data = repDicJP.get(key);
+			Pattern p = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(result);
+			result = m.replaceAll(data);
+		}
+		
+		return result;
+	}
+	
+	public String wordReplaceEN(String word){
+		String result = word;
+		for(String key: repDicEN.keySet()){
+			String data = repDicEN.get(key);
 			Pattern p = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(result);
 			result = m.replaceAll(data);

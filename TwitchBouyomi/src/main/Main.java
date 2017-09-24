@@ -42,10 +42,12 @@ public class Main extends JFrame implements ActionListener {
 	JCheckBox checkBox = new JCheckBox("発言者の名前を読み上げる");
 	JCheckBox checkBox2 = new JCheckBox("英文は専用音声を使う");
 	JCheckBox notifiCheck = new JCheckBox("コメント通知機能を使う");
+	JCheckBox readEmote = new JCheckBox("エモートを読み上げる");
 
 	private MyBot bot;
 	private boolean connection = false;
 	private boolean nameReading = false;
+	private boolean emoteReading = false;
 	private boolean notifiUsing = false;
 	private int English = -1;
 	
@@ -65,7 +67,7 @@ public class Main extends JFrame implements ActionListener {
 					e.printStackTrace();
 				} catch (java.lang.UnsatisfiedLinkError e2){
 					e2.printStackTrace();
-					JOptionPane.showMessageDialog(null, "32bit版をご利用下さい");
+					JOptionPane.showMessageDialog(null, "64bit版をご利用下さい");
 					System.exit(-1);
 				}
 			}
@@ -77,7 +79,7 @@ public class Main extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ImageIcon icon = new ImageIcon("./icon.png");
 	    setIconImage(icon.getImage());
-		setBounds(100, 100, 300, 226);
+		setBounds(100, 100, 300, 248);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -107,18 +109,18 @@ public class Main extends JFrame implements ActionListener {
 		textUserName.setColumns(10);
 		//btnConnect.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		btnConnect.setBounds(8, 125, 276, 38);
+		btnConnect.setBounds(8, 148, 276, 38);
 		contentPane.add(btnConnect);
 		btnConnect.addActionListener(this);
 		btnConnect.setActionCommand("auth");
 
 		JLabel lblStatus = new JLabel("Status:");
 		//lblStatus.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
-		lblStatus.setBounds(12, 173, 43, 13);
+		lblStatus.setBounds(12, 196, 43, 13);
 		contentPane.add(lblStatus);
 		//lblStatus_1.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
-		lblStatus_1.setBounds(67, 173, 215, 13);
+		lblStatus_1.setBounds(67, 196, 215, 13);
 		contentPane.add(lblStatus_1);
 		//checkBox.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
 
@@ -142,10 +144,15 @@ public class Main extends JFrame implements ActionListener {
 		textEnglish.setActionCommand("openSAPI");
 		
 		//notifiCheck.setFont(new Font("Meiryo UI", Font.PLAIN, 12));
-		notifiCheck.setBounds(8, 98, 137, 21);
+		notifiCheck.setBounds(8, 121, 137, 21);
 		contentPane.add(notifiCheck);
 		notifiCheck.addActionListener(this);
 		notifiCheck.setActionCommand("notifi");
+		
+		readEmote.setBounds(8, 98, 137, 21);
+		contentPane.add(readEmote);
+		readEmote.addActionListener(this);
+		readEmote.setActionCommand("emote");
 
 		loadConfigFile();
 		
@@ -179,6 +186,7 @@ public class Main extends JFrame implements ActionListener {
 				}
 				if(checkBox2.isSelected()) bot.usingEnglish(English);
 				if(notifiCheck.isSelected()) bot.usingPopup(true);
+				if(readEmote.isSelected()) bot.readingEmote(true);
 				storeConfigFile();
 			} else {
 				bot.disconnect();
@@ -211,6 +219,13 @@ public class Main extends JFrame implements ActionListener {
 			if(connection){
 				notifiUsing = notifiCheck.isSelected();
 				bot.usingPopup(notifiUsing);
+				storeConfigFile();
+			}
+		}
+		if(e.getActionCommand().equals("emote")){
+			if(connection){
+				emoteReading = readEmote.isSelected();
+				bot.readingEmote(emoteReading);
 				storeConfigFile();
 			}
 		}
@@ -254,6 +269,14 @@ public class Main extends JFrame implements ActionListener {
 				notifiCheck.setSelected(false);
 				notifiUsing = false;
 			}
+			if(br.readLine().equals("1")){
+				readEmote.setSelected(true);
+				emoteReading = true;
+			}
+			else {
+				readEmote.setSelected(false);
+				emoteReading = false;
+			}
 			br.close();
 		} catch (Exception e) {
 			Desktop desktop = Desktop.getDesktop();
@@ -290,6 +313,9 @@ public class Main extends JFrame implements ActionListener {
 			else bw.write("0");
 			bw.newLine();
 			if(notifiCheck.isSelected()) bw.write("1");
+			else bw.write("0");
+			bw.newLine();
+			if(readEmote.isSelected()) bw.write("1");
 			else bw.write("0");
 			bw.close();
 		} catch (IOException e) {
