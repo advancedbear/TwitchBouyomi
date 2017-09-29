@@ -5,12 +5,12 @@ import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 
 import javax.swing.ImageIcon;
@@ -43,6 +43,7 @@ public class Main extends JFrame implements ActionListener {
 	private JCheckBox chkReadEmote = new JCheckBox("エモートを読み上げる");
 
 	private MyBot bot;
+	private Config cfg;
 	private boolean connection = false;
 	
 	private WinSAPI vapi = new WinSAPI("");
@@ -212,14 +213,17 @@ public class Main extends JFrame implements ActionListener {
 
 	private void loadConfigFile() {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(config));
-			textAuthPassword.setText(br.readLine());
-			textUserName.setText(br.readLine());
-			chkReadName.setSelected(br.readLine().equals("1") ? true : false);
-			chkUseEnglish.setSelected(br.readLine().equals("1") ? true : false);
-			chkPopup.setSelected(br.readLine().equals("1") ? true: false);
-			chkReadEmote.setSelected(br.readLine().equals("1") ? true : false);
-			br.close();
+			FileInputStream fis = new FileInputStream(config);
+		    ObjectInputStream ois = new ObjectInputStream(fis);
+		    cfg = (Config) ois.readObject();
+		    ois.close();
+			
+			textAuthPassword.setText(cfg.getPassword());
+			textUserName.setText(cfg.getUsername());
+			chkReadName.setSelected(cfg.getReadName());
+			chkUseEnglish.setSelected(cfg.getUseEnglish());
+			chkPopup.setSelected(cfg.getUseNotify());
+			chkReadEmote.setSelected(cfg.getReadEmote());
 		} catch (Exception e) {
 			Desktop desktop = Desktop.getDesktop();
 			URI uri;
@@ -243,19 +247,17 @@ public class Main extends JFrame implements ActionListener {
 
 	private void storeConfigFile() {
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(config));
-			bw.write(new String(textAuthPassword.getPassword()));
-			bw.newLine();
-			bw.write(textUserName.getText());
-			bw.newLine();
-			bw.write(chkReadName.isSelected() ? "1" : "0");
-			bw.newLine();
-			bw.write(chkUseEnglish.isSelected() ? "1" : "0");
-			bw.newLine();
-			bw.write(chkPopup.isSelected() ? "1" : "0");
-			bw.newLine();
-			bw.write(chkReadEmote.isSelected() ? "1" : "0");
-			bw.close();
+			cfg.setPassword(new String(textAuthPassword.getPassword()));
+			cfg.setUsername(textUserName.getText());
+			cfg.setReadEmote(chkReadEmote.isSelected());
+			cfg.setReadName(chkReadName.isSelected());
+			cfg.setUseEnglish(chkUseEnglish.isSelected());
+			cfg.setUseNotify(chkPopup.isSelected());
+			
+			FileOutputStream fos = new FileOutputStream(config);
+		    ObjectOutputStream oos = new ObjectOutputStream(fos);
+		    oos.writeObject(cfg);
+		    oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
